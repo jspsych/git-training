@@ -1,0 +1,59 @@
+name: release
+
+on:
+  push:
+    paths:
+      - ".changeset/**"
+      - ".github/**"
+      - "packages/**"
+      - "package.json"
+      - "package-lock.json"
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Turborepo cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/turbo
+          key: ${{ runner.os }}-node-20-turbo-${{ hashFiles('node_modules/.cache/turbo') }}
+          restore-keys: |
+            ${{ runner.os }}-node-20-turbo-
+
+      - name: Check types
+        run: npm run tsc
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test -- --ci --maxWorkers=2
+
+      - name: Create Release Pull Request or Publish Packages
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: npm run changeset:version
+          publish: npm run changeset:publish
+          commit: "chore(release): version packages"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
