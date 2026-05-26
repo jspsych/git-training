@@ -12,7 +12,7 @@ describe("button-click-counter", () => {
       },
     ]);
 
-    expect(getHTML()).toContain("Click me!");
+    expect(getHTML()).toContain("Click here!");
     expect(getHTML()).toContain("<button");
   });
 
