@@ -34,7 +34,7 @@ describe("button-click-counter", () => {
       },
     ]);
 
-    expect(getHTML()).toContain("Button clicks:");
+    expect(getHTML()).toContain("Click till you hit 100, then press enter to find your time in miliseconds: ");
     expect(
       getHTML().includes(">0<") || getHTML().includes(">0 <") || getHTML().includes("value\">0")
     ).toBe(true);
