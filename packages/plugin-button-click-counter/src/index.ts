@@ -9,7 +9,7 @@ const info = <const>{
     /** The label to display on the button. */
     button_label: {
       type: ParameterType.STRING,
-      default: "Click me!",
+      default: "Click here!",
     },
     /** The key that the participant must press to end the trial. If null, any key press will end the trial. */
     key_to_advance: {
