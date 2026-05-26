@@ -2,10 +2,8 @@ name: build
 
 on:
   push:
-    branches-ignore:
-      - 'preview/**'
   pull_request:
-    types: [opened, reopened, ready_for_review, review_requested, synchronize]
+  workflow_dispatch:
 
 jobs:
   test:
