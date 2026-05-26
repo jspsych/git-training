@@ -58,7 +58,6 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
   constructor(private jsPsych: JsPsych) {}
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
-    console.log("button-click-counter trial started", trial);
     let click_count = 0;
     const start_time = performance.now();
 
