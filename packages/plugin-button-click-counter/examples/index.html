@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://unpkg.com/jspsych@8"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-button-click-counter"></script>
+    <link rel="stylesheet" href="https://unpkg.com/jspsych@8/css/jspsych.css" />
+  </head>
+  <body></body>
+  <script>
+    var jsPsych = initJsPsych({
+      on_finish: function () {
+        jsPsych.data.displayData();
+      },
+    });
+
+    var trial = {
+      type: jsPsychButtonClickCounter,
+      button_label: "Click me!",
+      key_to_advance: "Enter",
+      prompt: "<p>Click the button as many times as you like, then press Enter to continue.</p>",
+    };
+
+    jsPsych.run([trial]);
+  </script>
+</html>
