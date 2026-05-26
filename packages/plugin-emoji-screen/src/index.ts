@@ -103,7 +103,9 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
       let emoji = trial.emojis[Math.floor(Math.random() * trial.emojis.length)];
       if (emoji_locations.length > 0 && emoji === lastEmoji) {
         const availableEmojis = trial.emojis.filter(e => e !== lastEmoji);
-       emoji = availableEmojis[Math.floor(Math.random() * availableEmojis.length)];
+        emoji = availableEmojis.length > 0
+        ? availableEmojis[Math.floor(Math.random() * availableEmojis.length)]
+        : lastEmoji;
       }
 
       // Place the emoji at the click location
@@ -172,7 +174,9 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
       let emoji = trial.emojis[this.jsPsych.randomization.randomInt(0, trial.emojis.length - 1)];
       if (simulated_locations.length > 0 && emoji === lastEmoji) {
         const availableEmojis = trial.emojis.filter(e => e !== lastEmoji);
-        emoji = availableEmojis[this.jsPsych.randomization.randomInt(0, availableEmojis.length - 1)];
+        emoji = availableEmojis.length > 0
+        ? availableEmojis[this.jsPsych.randomization.randomInt(0, availableEmojis.length - 1)]
+        : lastEmoji;
       }
       simulated_locations.push({
         x: this.jsPsych.randomization.randomInt(0, 800),
