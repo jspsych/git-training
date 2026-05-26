@@ -97,8 +97,14 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
       const x = Math.round(event.clientX - rect.left);
       const y = Math.round(event.clientY - rect.top);
 
-      // Pick a random emoji from the pool
-      const emoji = trial.emojis[Math.floor(Math.random() * trial.emojis.length)];
+      // Pick a random emoji from the pool (different from the previous one)
+
+      const lastEmoji = emoji_locations.at(-1)?.emoji;
+      let emoji = trial.emojis[Math.floor(Math.random() * trial.emojis.length)];
+      if (emoji_locations.length > 0 && emoji === lastEmoji) {
+        const availableEmojis = trial.emojis.filter(e => e !== lastEmoji);
+       emoji = availableEmojis[Math.floor(Math.random() * availableEmojis.length)];
+      }
 
       // Place the emoji at the click location
       const emojiEl = document.createElement("span");
@@ -162,10 +168,16 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
     const num_clicks = this.jsPsych.randomization.randomInt(1, 5);
     const simulated_locations: EmojiLocation[] = [];
     for (let i = 0; i < num_clicks; i++) {
+      const lastEmoji = simulated_locations.at(-1)?.emoji;
+      let emoji = trial.emojis[this.jsPsych.randomization.randomInt(0, trial.emojis.length - 1)];
+      if (simulated_locations.length > 0 && emoji === lastEmoji) {
+        const availableEmojis = trial.emojis.filter(e => e !== lastEmoji);
+        emoji = availableEmojis[this.jsPsych.randomization.randomInt(0, availableEmojis.length - 1)];
+      }
       simulated_locations.push({
         x: this.jsPsych.randomization.randomInt(0, 800),
         y: this.jsPsych.randomization.randomInt(0, 400),
-        emoji: trial.emojis[this.jsPsych.randomization.randomInt(0, trial.emojis.length - 1)],
+        emoji: emoji,
       });
     }
 
