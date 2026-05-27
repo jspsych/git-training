@@ -37,7 +37,7 @@ const info = <const>{
     },
   },
   // When you run build on your plugin, citations will be generated here based on the information in the CITATION.cff file.
-  citations: "__CITATIONS__",
+  citations: '__CITATIONS__',
 };
 
 type Info = typeof info;
@@ -90,9 +90,8 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
     display_element.appendChild(wrapper);
     btn.addEventListener("click", () => {
       click_count++;
-      display_element.querySelector(
-        "#jspsych-button-click-counter-value",
-      ).textContent = click_count.toString();
+      display_element.querySelector("#jspsych-button-click-counter-value").textContent =
+        click_count.toString();
     });
 
     // End trial function
@@ -115,8 +114,7 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
       callback_function: (info: { key: string; rt: number }) => {
         end_trial(info.key);
       },
-      valid_responses:
-        trial.key_to_advance === null ? "ALL_KEYS" : [trial.key_to_advance],
+      valid_responses: trial.key_to_advance === null ? "ALL_KEYS" : [trial.key_to_advance],
       rt_method: "performance",
       persist: false,
     });
@@ -126,7 +124,7 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
     trial: TrialType<Info>,
     simulation_mode,
     simulation_options: any,
-    load_callback: () => void,
+    load_callback: () => void
   ) {
     if (simulation_mode == "data-only") {
       load_callback();
@@ -147,10 +145,7 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
       rt: this.jsPsych.randomization.sampleExGaussian(500, 50, 1 / 150, true),
     };
 
-    return this.jsPsych.pluginAPI.mergeSimulationData(
-      default_data,
-      simulation_options,
-    );
+    return this.jsPsych.pluginAPI.mergeSimulationData(default_data, simulation_options);
   }
 
   private simulate_data_only(trial: TrialType<Info>, simulation_options) {
@@ -158,11 +153,7 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
     this.jsPsych.finishTrial(data);
   }
 
-  private simulate_visual(
-    trial: TrialType<Info>,
-    simulation_options,
-    load_callback: () => void,
-  ) {
+  private simulate_visual(trial: TrialType<Info>, simulation_options, load_callback: () => void) {
     const data = this.create_simulation_data(trial, simulation_options);
 
     const display_element = this.jsPsych.getDisplayElement();
@@ -172,7 +163,7 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
 
     // Simulate some button clicks
     const btn = display_element.querySelector<HTMLButtonElement>(
-      "#jspsych-button-click-counter-btn",
+      "#jspsych-button-click-counter-btn"
     );
     for (let i = 0; i < data.button_clicks; i++) {
       this.jsPsych.pluginAPI.clickTarget(btn);
