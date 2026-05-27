@@ -2,11 +2,12 @@ import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from "jspsych";
 
 import { version } from "../package.json";
 
-/** Represents a single placed emoji with its screen coordinates. */
-interface EmojiLocation {
+/** Represents a single placed symbol with its screen coordinates. */
+interface SymbolLocation {
   x: number;
   y: number;
-  emoji: string;
+  symbol: string;
+  mode: "emoji" | "vowel";
 }
 
 const info = <const>{
@@ -18,6 +19,17 @@ const info = <const>{
       type: ParameterType.STRING,
       array: true,
       default: ["😀", "🎉", "⭐", "🌟", "🎈", "🦄", "🍕", "🎸"],
+    },
+    /** The pool of vowels to randomly select from when the participant clicks. */
+    vowels: {
+      type: ParameterType.STRING,
+      array: true,
+      default: ["a", "e", "i", "o", "u"],
+    },
+    /** The mode of the trial. Valid values are "emoji" or "vowel". */
+    mode: {
+      type: ParameterType.STRING,
+      default: "emoji",
     },
     /** The key that ends the trial and records the final emoji arrangement. */
     key_to_finish: {
@@ -31,8 +43,8 @@ const info = <const>{
     },
   },
   data: {
-    /** Array of objects describing each placed emoji: {x, y, emoji}. x and y are pixel coordinates relative to the canvas. */
-    emoji_locations: {
+    /** Array of objects describing each placed symbol: {x, y, symbol, mode}. x and y are pixel coordinates relative to the canvas. */
+    symbol_locations: {
       type: ParameterType.COMPLEX,
       array: true,
     },
@@ -68,7 +80,7 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
   constructor(private jsPsych: JsPsych) {}
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
-    const emoji_locations: EmojiLocation[] = [];
+    const symbol_locations: SymbolLocation[] = [];
     const start_time = performance.now();
 
     // Build the trial layout using DOM APIs
@@ -76,9 +88,10 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
     wrapper.id = "jspsych-emoji-screen-wrapper";
     wrapper.style.cssText = "position: relative; width: 100%; min-height: 400px;";
 
+    const promptDiv = document.createElement("div");
+    promptDiv.id = "jspsych-emoji-screen-prompt";
+
     if (trial.prompt !== null) {
-      const promptDiv = document.createElement("div");
-      promptDiv.id = "jspsych-emoji-screen-prompt";
       promptDiv.innerHTML = trial.prompt;
       wrapper.appendChild(promptDiv);
     }
@@ -89,6 +102,19 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
       "position: relative; width: 100%; height: 400px; border: 2px solid #ccc; cursor: crosshair; overflow: hidden;";
     wrapper.appendChild(canvas);
 
+    const modeButton = document.createElement("button");
+    let currentMode: "emoji" | "vowel" = trial.mode as "emoji" | "vowel";
+    modeButton.textContent = currentMode === "emoji" ? "Switch from Emojis to Vowels" : "Switch from Vowels to Emojis";
+    modeButton.addEventListener("click", () => {
+      event.stopPropagation(); // Prevent the click from placing an emoji when toggling modes
+      currentMode = currentMode === "emoji" ? "vowel" : "emoji";
+      modeButton.textContent = currentMode === "emoji" ? "Switch from Emojis to Vowels" : "Switch from Vowels to Emojis";
+      promptDiv.innerHTML = currentMode === "emoji"
+        ? "<p>Click anywhere to place emojis. Use the button to switch to vowels. Press <strong>Enter</strong> when done.</p>"
+        : "<p>Click anywhere to place vowels. Use the button to switch to emojis. Press <strong>Enter</strong> when done.</p>";
+    });
+    wrapper.appendChild(modeButton);
+
     display_element.appendChild(wrapper);
 
     // Handle clicks on the canvas to place emojis
@@ -98,23 +124,30 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
       const y = Math.round(event.clientY - rect.top);
 
       // Pick a random emoji from the pool
-      const emoji = trial.emojis[Math.floor(Math.random() * trial.emojis.length)];
+      let symbol;
+      if (currentMode === "emoji") {
+        const emoji = trial.emojis[Math.floor(Math.random() * trial.emojis.length)];
+        symbol = emoji;
+      } else {
+        const vowel = trial.vowels[Math.floor(Math.random() * trial.vowels.length)];
+        symbol = vowel;
+      }
 
       // Place the emoji at the click location
       const emojiEl = document.createElement("span");
-      emojiEl.textContent = emoji;
+      emojiEl.textContent = symbol;
       emojiEl.style.position = "absolute";
       emojiEl.style.left = `${x}px`;
       emojiEl.style.top = `${y}px`;
       emojiEl.style.fontSize = "2rem";
       emojiEl.style.transform = "translate(-50%, -50%)";
       emojiEl.style.userSelect = "none";
-      emojiEl.setAttribute("data-emoji", emoji);
+      emojiEl.setAttribute("data-symbol", symbol);
       emojiEl.setAttribute("data-x", x.toString());
       emojiEl.setAttribute("data-y", y.toString());
       canvas.appendChild(emojiEl);
 
-      emoji_locations.push({ x, y, emoji });
+      symbol_locations.push({ x, y, symbol, mode: currentMode });
     });
 
     // End trial function
@@ -126,7 +159,7 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
       display_element.innerHTML = "";
 
       this.jsPsych.finishTrial({
-        emoji_locations: emoji_locations,
+        symbol_locations: symbol_locations,
         key_pressed: key,
         rt: rt,
       });
@@ -159,18 +192,20 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
   }
 
   private create_simulation_data(trial: TrialType<Info>, simulation_options) {
-    const num_clicks = this.jsPsych.randomization.randomInt(1, 5);
-    const simulated_locations: EmojiLocation[] = [];
-    for (let i = 0; i < num_clicks; i++) {
-      simulated_locations.push({
-        x: this.jsPsych.randomization.randomInt(0, 800),
-        y: this.jsPsych.randomization.randomInt(0, 400),
-        emoji: trial.emojis[this.jsPsych.randomization.randomInt(0, trial.emojis.length - 1)],
-      });
+    const simulated_locations: SymbolLocation[] = [];
+    const num_symbols = this.jsPsych.randomization.sampleWithoutReplacement([1, 2, 3, 4, 5], 1)[0];
+    for (let i = 0; i < num_symbols; i++) {
+      const x = this.jsPsych.randomization.randomInt(0, 800);
+      const y = this.jsPsych.randomization.randomInt(0, 400);
+      const current_mode = this.jsPsych.randomization.sampleWithoutReplacement(["emoji", "vowel"], 1)[0] as "emoji" | "vowel";
+      const symbol = current_mode === "emoji"
+        ? trial.emojis[Math.floor(Math.random() * trial.emojis.length)]
+        : trial.vowels[Math.floor(Math.random() * trial.vowels.length)];
+      simulated_locations.push({ x, y, symbol, mode: current_mode });
     }
 
     const default_data = {
-      emoji_locations: simulated_locations,
+      symbol_locations: simulated_locations,
       key_pressed: trial.key_to_finish,
       rt: this.jsPsych.randomization.sampleExGaussian(2000, 200, 1 / 500, true),
     };
@@ -194,8 +229,14 @@ class EmojiScreenPlugin implements JsPsychPlugin<Info> {
     // Simulate clicks to place emojis
     const canvas = display_element.querySelector<HTMLDivElement>("#jspsych-emoji-screen-canvas");
     if (canvas) {
-      for (const loc of data.emoji_locations) {
+      const modeBtn = display_element.querySelector<HTMLButtonElement>("button");
+      let simulatedMode = trial.mode as "emoji" | "vowel";
+      for (const loc of data.symbol_locations) {
         const rect = canvas.getBoundingClientRect();
+        if (loc.mode !== simulatedMode) {
+          modeBtn?.click();
+          simulatedMode = loc.mode;
+        }
         const clickEvent = new MouseEvent("click", {
           clientX: rect.left + loc.x,
           clientY: rect.top + loc.y,
