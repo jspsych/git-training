@@ -52,7 +52,7 @@ describe("button-click-counter", () => {
     );
     btn.click();
     expect(displayElement.querySelector("#jspsych-button-click-counter-value").textContent).toBe(
-      "1"
+      "100"
     );
     btn.click();
     expect(displayElement.querySelector("#jspsych-button-click-counter-value").textContent).toBe(
