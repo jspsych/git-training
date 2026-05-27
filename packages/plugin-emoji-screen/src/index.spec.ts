@@ -68,6 +68,28 @@ describe("emoji-screen", () => {
     expect(emojiElements.length).toBe(3);
   });
 
+  it("does not place the same emoji", async () => {
+    const { displayElement } = await startTimeline([
+      {
+        type: emojiScreen,
+        emojis: ["😀", "🎉"],
+      },
+    ]);
+
+    const canvas = displayElement.querySelector<HTMLDivElement>("#jspsych-emoji-screen-canvas");
+
+    for (let i = 0; i < 3; i++) {
+      canvas.dispatchEvent(
+        new MouseEvent("click", { clientX: 10 + i * 50, clientY: 10, bubbles: true })
+      );
+    }
+
+    const emojiElements = canvas.querySelectorAll("span[data-emoji]");
+    for (let i = 1; i < emojiElements.length; i++) {
+      expect(emojiElements[i].textContent).not.toBe(emojiElements[i - 1].textContent);
+    }
+  });
+
   it("ends the trial when the key_to_finish key is pressed", async () => {
     const { expectFinished, getData } = await startTimeline([
       {
