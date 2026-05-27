@@ -2,7 +2,7 @@
 <html>
   <head>
     <script src="https://unpkg.com/jspsych@8"></script>
-    <script src="https://unpkg.com/@jspsych/plugin-emoji-screen"></script>
+    <script src="../dist/index.browser.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/jspsych@8/css/jspsych.css" />
   </head>
   <body></body>
@@ -15,7 +15,7 @@
 
     var trial = {
       type: jsPsychEmojiScreen,
-      emojis: ["😀", "🎉", "⭐", "🌟", "🎈", "🦄", "🍕", "🎸"],
+      emojis: ["😀", "🎉", "⭐", "🌟", "🎈", "🦄", "🍕", "🎸", "💔", "🐟"],
       key_to_finish: "Enter",
       prompt: "<p>Click anywhere to place emojis. Press <strong>Enter</strong> when you are done.</p>",
     };
