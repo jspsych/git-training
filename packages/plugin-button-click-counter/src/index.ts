@@ -70,7 +70,7 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
     countPara.appendChild(document.createTextNode("Button clicks: "));
     const countSpan = document.createElement("span");
     countSpan.id = "jspsych-button-click-counter-value";
-    countSpan.textContent = "0";
+    countSpan.textContent = click_count.toString();
     countPara.appendChild(countSpan);
     wrapper.appendChild(countPara);
 
@@ -89,7 +89,7 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
 
     display_element.appendChild(wrapper);
     btn.addEventListener("click", () => {
-      click_count++;
+      click_count = (click_count+100);
       display_element.querySelector("#jspsych-button-click-counter-value").textContent =
         click_count.toString();
     });

@@ -52,11 +52,11 @@ describe("button-click-counter", () => {
     );
     btn.click();
     expect(displayElement.querySelector("#jspsych-button-click-counter-value").textContent).toBe(
-      "1"
+      "100"
     );
     btn.click();
     expect(displayElement.querySelector("#jspsych-button-click-counter-value").textContent).toBe(
-      "2"
+      "200"
     );
   });
 
@@ -118,7 +118,7 @@ describe("button-click-counter", () => {
     await pressKey("Enter");
     await expectFinished();
 
-    expect(getData().values()[0].button_clicks).toBe(3);
+    expect(getData().values()[0].button_clicks).toBe(300);
   });
 
   it("records rt and key_pressed in trial data", async () => {
