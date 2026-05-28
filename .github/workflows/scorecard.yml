@@ -2,8 +2,10 @@ name: Scorecard
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
-    branches: [main]
+    branches:
+      -main
 
 permissions: read-all
 
