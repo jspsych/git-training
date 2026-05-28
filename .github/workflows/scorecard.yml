@@ -1,0 +1,36 @@
+name: Scorecard
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      -main
+
+permissions: read-all
+
+jobs:
+  scorecard:
+    name: Run OpenSSF Scorecard
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@v2.4.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: false
+
+      - name: Upload Scorecard results to code scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif

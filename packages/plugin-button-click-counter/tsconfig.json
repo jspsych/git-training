@@ -1,6 +1,7 @@
 {
   "extends": "@jspsych/config/tsconfig.contrib.json",
   "compilerOptions": {
+    "types": ["jest", "node"],
     "baseUrl": ".",
     "resolveJsonModule": true
   },

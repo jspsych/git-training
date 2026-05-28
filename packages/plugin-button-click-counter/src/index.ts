@@ -67,7 +67,7 @@ class ButtonClickCounterPlugin implements JsPsychPlugin<Info> {
 
     const countPara = document.createElement("p");
     countPara.id = "jspsych-button-click-counter-count";
-    countPara.appendChild(document.createTextNode("Button clicks: "));
+    countPara.appendChild(document.createTextNode("Click till you hit 100, then press Enter to find your time in milliseconds: "));
     const countSpan = document.createElement("span");
     countSpan.id = "jspsych-button-click-counter-value";
     countSpan.textContent = "0";
