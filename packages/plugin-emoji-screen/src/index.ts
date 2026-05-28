@@ -17,7 +17,7 @@ const info = <const>{
     emojis: {
       type: ParameterType.STRING,
       array: true,
-      default: ["😀", "🎉", "⭐", "🌟", "🎈", "🦄", "🍕", "🎸"],
+      default: ["😀", "🎉", "⭐", "🌟", "🎈", "🦄", "🍕", "🎸","🌙"],
     },
     /** The key that ends the trial and records the final emoji arrangement. */
     key_to_finish: {
