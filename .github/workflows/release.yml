@@ -19,10 +19,10 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: 20
           cache: npm
@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Download Turborepo cache
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3.5.0
         with:
           path: node_modules/.cache/turbo
           key: ${{ runner.os }}-node-20-turbo-${{ hashFiles('node_modules/.cache/turbo') }}
@@ -49,7 +49,7 @@ jobs:
 
       - name: Create Release Pull Request or Publish Packages
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1.8.0
         with:
           version: npm run changeset:version
           publish: npm run changeset:publish
