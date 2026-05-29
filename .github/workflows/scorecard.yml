@@ -1,0 +1,42 @@
+name: OSSF Scorecard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "30 1 * * 6"
+
+permissions:
+  contents: read
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      # Required when publishing results (badge / API / code scanning)
+      security-events: write
+      id-token: write
+
+      # Recommended reads for private repos to avoid GraphQL/SAST gaps
+      contents: read
+      issues: read
+      pull-requests: read
+      checks: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Scorecard analysis
+        uses: ossf/scorecard-action@v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      - name: Upload results to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
