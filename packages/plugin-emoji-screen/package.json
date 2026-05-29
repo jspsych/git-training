@@ -1,6 +1,6 @@
 {
   "name": "@jspsych/plugin-emoji-screen",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A jsPsych plugin that places a random emoji wherever the participant clicks on the screen and records the final arrangement",
   "type": "module",
   "main": "dist/index.cjs",
