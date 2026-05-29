@@ -1,6 +1,6 @@
 {
   "name": "@jspsych/plugin-button-click-counter",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A jsPsych plugin that displays a button and click counter, ending the trial when a key is pressed",
   "type": "module",
   "main": "dist/index.cjs",
