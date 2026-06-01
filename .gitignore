@@ -6,3 +6,6 @@ coverage/
 .vscode/
 .turbo
 .env
+local.log
+test-results/
+playwright-report/
