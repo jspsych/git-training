@@ -43,3 +43,31 @@ jobs:
 
       - name: Run tests
         run: npm run test -- --ci --coverage --maxWorkers=2 --reporters=default --reporters=github-actions
+
+  browserstack-playwright:
+    name: BrowserStack Playwright Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: github.event_name == 'workflow_dispatch'
+    env:
+      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Run BrowserStack Playwright test
+        run: npm run test:browserstack
